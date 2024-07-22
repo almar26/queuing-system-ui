@@ -29,11 +29,25 @@ export default {
     },
 
     methods: {
-        greet() {
-            this.greetingSpeech.text = `Hello, ${this.name}. What's the crack?`
+        speakVoice() {
+            // let voices, utterance;
+            // voices = this.synth.getVoices();
+            // utterance = new SpeechSynthesisUtterance(`Hello ${this.name}`);
+            // utterance.voice = voices[2];
+            // console.log(utterance.voice)
+            // speechSynthesis.speak(utterance)
 
-            this.greetingSpeech.voice = this.voiceList[0]
+            let voices = this.synth.getVoices();
+            this.greetingSpeech.text = `Hello, ${this.name}`
+            this.greetingSpeech.voice = voices[0]
             this.synth.speak(this.greetingSpeech)
+        },
+        greet() {
+            let voices = this.synth.getVoices();
+            this.greetingSpeech.text = `Hello, ${this.name}`
+            this.greetingSpeech.voice = voices[1]
+            this.synth.speak(this.greetingSpeech)
+           
         }
     }
 }

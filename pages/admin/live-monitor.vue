@@ -25,21 +25,23 @@
       <v-col cols="3" class="bg-image">
         <v-row>
           <v-col cols="12">
-            <v-img src="logo.png" max-height="100" contain></v-img>
+            <v-img src="/logo.png" style="height: 14vh" contain></v-img>
           </v-col>
           <v-col cols="12">
             <v-card elevation="0" color="transparent">
-              <div class="ns-text mb-5">Now Serving</div>
-              <v-divider dark></v-divider>
+  
+              <div class="ns-text">Now Serving</div>
+              
               <v-card elevation="0" color="transparent">
                 <v-card-text>
+                  <v-divider dark></v-divider>
                   <v-card
                     :elevation="card_elev_1"
                     :class="active_card_1"
                     color="transparent"
                     outlined
                   >
-                    <v-layout justify-center align-center style="height: 17vh">
+                    <v-layout justify-center align-center style="height: 16vh">
                       <div d-flex>
                         <div class="cashier-number">CASHIER 1</div>
                         <div class="que-number" :class="active_card_1">
@@ -48,14 +50,14 @@
                       </div>
                     </v-layout>
                   </v-card>
-                  <v-divider class="my-2" dark></v-divider>
+                  <v-divider dark></v-divider>
                   <v-card
                     color="transparent"
                     :elevation="card_elev_2"
                     :class="active_card_2"
                     outlined
                   >
-                    <v-layout justify-center align-center style="height: 17vh">
+                    <v-layout justify-center align-center style="height: 16vh">
                       <div d-flex>
                         <div class="cashier-number">CASHIER 2</div>
                         <div class="que-number" :class="active_card_2">
@@ -64,14 +66,14 @@
                       </div>
                     </v-layout>
                   </v-card>
-                  <v-divider class="my-2" dark></v-divider>
+                  <v-divider dark></v-divider>
                   <v-card
                     color="transparent"
                     :elevation="card_elev_3"
                     :class="active_card_3"
                     outlined
                   >
-                    <v-layout justify-center align-center style="height: 17vh">
+                    <v-layout justify-center align-center style="height: 16vh">
                       <div d-flex>
                         <div class="cashier-number">CASHIER 3</div>
                         <div class="que-number" :class="active_card_3">
@@ -80,14 +82,14 @@
                       </div>
                     </v-layout>
                   </v-card>
-                  <v-divider class="my-2" dark></v-divider>
+                  <v-divider dark></v-divider>
                   <v-card
                     color="transparent"
                     :elevation="card_elev_4"
                     :class="active_card_4"
                     outlined
                   >
-                    <v-layout justify-center align-center style="height: 17vh">
+                    <v-layout justify-center align-center style="height: 16vh">
                       <div d-flex>
                         <div class="cashier-number">CASHIER 4</div>
                         <div class="que-number" :class="active_card_4">
@@ -130,6 +132,7 @@ export default {
       cashier_3: 0,
       cashier_4: 0,
       voiceList: [],
+      selectedVoice: 2,
       synth: window.speechSynthesis,
       greetingSpeech: new window.SpeechSynthesisUtterance(),
       name: '',
@@ -177,6 +180,7 @@ export default {
       channel.subscribe('send-number', (message) => {
         console.log(message.data.que_number)
         const cashier_number = message.data.cashier
+        const voices = this.synth.getVoices();
         console.log('cashier:', cashier_number)
         if (cashier_number == 1) {
           this.card_elev_1 = 10
@@ -194,7 +198,7 @@ export default {
           setTimeout(() => {
             const queNum = message.data.que_number
             this.greetingSpeech.text = `Number ${queNum}, to cashier ${cashier_number}`
-            this.greetingSpeech.voice = this.voiceList[0]
+            this.greetingSpeech.voice = voices[this.selectedVoice]
             this.synth.speak(this.greetingSpeech)
           }, 1500)
           setTimeout(() => {
@@ -216,7 +220,7 @@ export default {
           setTimeout(() => {
             const queNum = message.data.que_number
             this.greetingSpeech.text = `Number ${queNum}, to cashier ${cashier_number}`
-            this.greetingSpeech.voice = this.voiceList[0]
+            this.greetingSpeech.voice = voices[this.selectedVoice]
             this.synth.speak(this.greetingSpeech)
           }, 1500)
           setTimeout(() => {
@@ -238,7 +242,7 @@ export default {
           setTimeout(() => {
             const queNum = message.data.que_number
             this.greetingSpeech.text = `Number ${queNum}, to cashier ${cashier_number}`
-            this.greetingSpeech.voice = this.voiceList[0]
+            this.greetingSpeech.voice = voices[this.selectedVoice]
             this.synth.speak(this.greetingSpeech)
           }, 1500)
           setTimeout(() => {
@@ -258,9 +262,10 @@ export default {
           vid.volume = 0
           this.playAudio()
           setTimeout(() => {
+            let voices = this.synth.getVoices();
             const queNum = message.data.que_number
             this.greetingSpeech.text = `Number ${queNum}, to cashier ${cashier_number}`
-            this.greetingSpeech.voice = this.voiceList[0]
+            this.greetingSpeech.voice = voices[this.selectedVoice]
             this.synth.speak(this.greetingSpeech)
           }, 1500)
           setTimeout(() => {
@@ -273,16 +278,17 @@ export default {
 
     receivedNotify() {
       const channel = ably.channels.get('que')
+      
       channel.subscribe('notify-number', (message) => {
+        const voices = this.synth.getVoices();
         let vid = document.getElementById('myVideo')
         vid.volume = 0
-
         console.log(message.data.que_number)
         const cashier_number = message.data.cashier
         const que_number = message.data.que_number
         console.log('cashier: ', cashier_number)
         this.greetingSpeech.text = `Number ${que_number}, to cashier ${cashier_number}`
-        this.greetingSpeech.voice = this.voiceList[0]
+        this.greetingSpeech.voice = voices[this.selectedVoice]
         this.synth.speak(this.greetingSpeech)
         setTimeout(() => {
           vid.volume = 0.1
@@ -313,7 +319,7 @@ html {
 .que-number {
   /* font-size: 60px; */
   font-size: 9vh;
-  margin: 15px 0;
+  margin: 13px 0;
   font-weight: bold;
   text-align: center;
   color: #ffffff;
@@ -321,7 +327,7 @@ html {
 
 .ns-text {
   /* font-size: 35px; */
-  font-size: 5vh;
+  font-size: 4vh;
   font-weight: bold;
   text-transform: uppercase;
   text-align: center;
